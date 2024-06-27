@@ -10,6 +10,7 @@ from sqlalchemy import String
 
 Base = declarative_base()
 
+
 class BaseModel:
     """Defines the BaseModel class.
 
@@ -22,14 +23,14 @@ class BaseModel:
     id = Column(String(60), primary_key=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    
+
     def __init__(self, *args, **kwargs):
         """Initialize a new BaseModel.
 
         Args:
             *args (any): Unused.
             **kwargs (dict): Key/value pairs of attributes.
-        """    
+        """
         self.id = str(uuid4())
         self.created_at = datetime.today()
         self.updated_at = datetime.today()

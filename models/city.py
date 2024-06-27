@@ -1,4 +1,4 @@
-!/usr/bin/python3
+#!/usr/bin/python3
 """Defines the City class."""
 from models.base_model import Base
 from models.base_model import BaseModel
@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 
 
 from models.place import Place
+
 
 class City(BaseModel, Base):
     """Represents a city for a MySQL database.
