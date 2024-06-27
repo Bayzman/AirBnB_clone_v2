@@ -1,17 +1,20 @@
 -- Creates a MySQL server with:
---   Database hbnb_test_db.
---   User hbnb_test with password hbnb_test_pwd in localhost.
---   Grants all privileges for hbnb_test on hbnb_test_db.
+--   Database hbnb_dev_db.
+--   User hbnb_dev with password hbnb_dev_pwd in localhost.
+--   Grants all privileges for hbnb_test on hbnb_dev_db.
 --   Grants SELECT privilege for hbnb_test on performance_schema.
 
-CREATE DATABASE IF NOT EXISTS hbnb_test_db;
+CREATE DATABASE IF NOT EXISTS hbnb_dev_db;
+USE hbnb_dev_db;
 CREATE USER
-    IF NOT EXISTS 'hbnb_test'@'localhost'
-    IDENTIFIED BY 'hbnb_test_pwd';
+    IF NOT EXISTS 'hbnb_dev'@'localhost'
+    IDENTIFIED BY 'hbnb_dev_pwd';
 GRANT ALL PRIVILEGES
    ON hbnb_test_db.*
-   TO 'hbnb_test'@'localhost';
+   TO 'hbnb_dev'@'localhost';
 GRANT SELECT
    ON performance_schema.*
-   TO 'hbnb_test'@'localhost';
+   TO 'hbnb_dev'@'localhost';
+GRANT SHOW DATABASES ON *.* TO 'hbnb_dev'@'localhost';
+
 FLUSH PRIVILEGES;
