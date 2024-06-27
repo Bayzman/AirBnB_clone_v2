@@ -62,6 +62,11 @@ class Place(BaseModel, Base):
                              overlaps="place_amenities")
     amenity_ids = []
 
+    def __init__(self, *args, **kwargs):
+        """Initialize the class"""
+        super().__init__(*args, **kwargs)
+        self.amenity_ids = []
+
     if getenv("HBNB_TYPE_STORAGE", None) != "db":
         @property
         def reviews(self):
@@ -74,7 +79,7 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
-            """Get/set linked Amenities."""
+            """Getter linked Amenities"""
             amenity_list = []
             for amenity in list(models.storage.all(Amenity).values()):
                 if amenity.id in self.amenity_ids:
@@ -83,5 +88,6 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, value):
-            if type(value) == Amenity:
+            """Setter for linked Amenities"""
+            if isinstance(value, Amenity):
                 self.amenity_ids.append(value.id)
