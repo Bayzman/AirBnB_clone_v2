@@ -18,14 +18,26 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = "(hbnb) "
     __classes = {
-        "BaseModel",
-        "User",
-        "State",
-        "City",
-        "Amenity",
-        "Place",
-        "Review"
+        "BaseModel": BaseModel,
+        "User": User,
+        "State": State,
+        "City": City,
+        "Amenity": Amenity,
+        "Place": Place,
+        "Review": Review
     }
+    dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
+
+    types = {"user_id": str, "name": str,
+             "email": str, "password": str,
+             "first_name": str, "last_name": str,
+             "state_id": str, "city_id": str,
+             "description": str, "number_rooms": int,
+             "number_bathrooms": int, "max_guest": int,
+             "price_by_night": int, "latitude": float,
+             "longitude": float, "amenity_ids": list,
+             "place_id": str, "text": str
+            }
 
     def emptyline(self):
         """Ignore empty spaces."""
@@ -33,7 +45,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_quit(self, line):
         """Quit command to exit the program."""
-        return True
+        exit()
 
     def do_EOF(self, line):
         """EOF signal to exit the program."""
