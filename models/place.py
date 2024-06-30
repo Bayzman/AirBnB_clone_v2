@@ -58,14 +58,8 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     reviews = relationship("Review", backref="place", cascade="delete")
     amenities = relationship("Amenity", secondary="place_amenity",
-                             viewonly=False, back_populates="place_amenities",
-                             overlaps="place_amenities")
+                             viewonly=False)
     amenity_ids = []
-
-    def __init__(self, *args, **kwargs):
-        """Initialize the class"""
-        super().__init__(*args, **kwargs)
-        self.amenity_ids = []
 
     if getenv("HBNB_TYPE_STORAGE", None) != "db":
         @property
@@ -79,7 +73,7 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
-            """Getter linked Amenities"""
+            """Get/set linked Amenities."""
             amenity_list = []
             for amenity in list(models.storage.all(Amenity).values()):
                 if amenity.id in self.amenity_ids:
@@ -88,6 +82,5 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, value):
-            """Setter for linked Amenities"""
-            if isinstance(value, Amenity):
+            if type(value) == Amenity:
                 self.amenity_ids.append(value.id)
