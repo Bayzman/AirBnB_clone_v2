@@ -5,6 +5,8 @@ from models.base_model import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
+import models
+import os
 
 
 class User(BaseModel, Base):
@@ -21,10 +23,20 @@ class User(BaseModel, Base):
         places (sqlalchemy relationship): The User-Place relationship.
         reviews (sqlalchemy relationship): The User-Review relationship.
     """
-    __tablename__ = "users"
-    email = Column(String(128), nullable=False)
-    password = Column(String(128), nullable=False)
-    first_name = Column(String(128))
-    last_name = Column(String(128))
-    places = relationship("Place", backref="user", cascade="delete")
-    reviews = relationship("Review", backref="user", cascade="delete")
+    __tablename__ = 'users'
+
+    storage_type = os.getenv('HBNB_TYPE_STORAGE')
+
+    if storage_type == 'db':
+        email = Column(String(128), nullable=False)
+        password = Column(String(128), nullable=False)
+        first_name = Column(String(128), nullable=True)
+        last_name = Column(String(128), nullable=True)
+        places = relationship("Place", backref="user", cascade="delete")
+        reviews = relationship("Review", backref="user")
+
+    else:
+        email = ''
+        password = ''
+        first_name = ''
+        last_name = ''
