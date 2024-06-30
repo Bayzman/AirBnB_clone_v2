@@ -2,9 +2,9 @@
 """Defines the User class."""
 from models.base_model import Base
 from models.base_model import BaseModel
-from sqlalchemy import Column
-from sqlalchemy import String
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 import models
 import os
 
