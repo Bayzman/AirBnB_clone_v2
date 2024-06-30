@@ -8,20 +8,19 @@ from sqlalchemy.orm import relationship
 
 
 class User(BaseModel, Base):
+    """Represents a user for a MySQL database.
 
-    """Represents a user in Mysql database.
-    Inherits from sqlalchemy Base and links to the Mysql table  users.
+    Inherits from SQLAlchemy Base and links to the MySQL table users.
 
-    Arttributes:
-        __tablesname__ (str): the name of the mysqltable to store users.
-        email: (sqlalchemy String): user's email address.
-        password (sqlalchemy String): user's password.
-        first_name (sqlalchemy String): users' first name.
-        last_name (sqlalchemy String): user's last_name.
-        places(sqlalchemy relationship): user place relationship.
-        reviews (sqlalchemy relationship): user reciew relationship
+    Attributes:
+        __tablename__ (str): The name of the MySQL table to store users.
+        email: (sqlalchemy String): The user's email address.
+        password (sqlalchemy String): The user's password.
+        first_name (sqlalchemy String): The user's first name.
+        last_name (sqlalchemy String): The user's last name.
+        places (sqlalchemy relationship): The User-Place relationship.
+        reviews (sqlalchemy relationship): The User-Review relationship.
     """
-
     __tablename__ = "users"
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)

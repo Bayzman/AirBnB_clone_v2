@@ -32,8 +32,7 @@ class BaseModel:
             **kwargs (dict): Key/value pairs of attributes.
         """
         self.id = str(uuid4())
-        self.created_at = datetime.today()
-        self.updated_at = datetime.today()
+        self.created_at = self.updated_at = datetime.utcnow()
         if kwargs:
             for key, value in kwargs.items():
                 if key == "created_at" or key == "updated_at":
@@ -48,7 +47,7 @@ class BaseModel:
         models.storage.save()
 
     def to_dict(self):
-        """Return the dictionary of the BaseModel instance.
+        """Return a dictionary representation of the BaseModel instance.
 
         Includes the key/value pair __class__ representing
         the class name of the object.
