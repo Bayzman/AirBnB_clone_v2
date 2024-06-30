@@ -4,6 +4,7 @@ import cmd
 import sys
 from models.base_model import BaseModel
 from models.__init__ import storage
+from models import storage
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -24,11 +25,52 @@ class HBNBCommand(cmd.Cmd):
                'Review': Review
               }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
+
+    # Dictionary containing the unique public class attribute types
     types = {
-             'number_rooms': int, 'number_bathrooms': int,
-             'max_guest': int, 'price_by_night': int,
-             'latitude': float, 'longitude': float
-            }
+        "user_id": str, "name": str,
+        # User
+        "email": str, "password": str,
+        "first_name": str, "last_name": str,
+        # City
+        "state_id": str,
+        # Place
+        "city_id": str,
+        "description": str, "number_rooms": int,
+        "number_bathrooms": int, "max_guest": int,
+        "price_by_night": int, "latitude": float,
+        "longitude": float, "amenity_ids": list,
+        # Reviews
+        "place_id": str, "text": str
+    }
+
+    def type_cast_arg(self, value, type):
+        """Cast arguments base on the data type given."""
+        try:
+            value = eval(value)
+        except Exception:
+            return
+
+        if isinstance(value, str) and type is str:
+            return value.replace("_", " ")
+
+        elif isinstance(value, int) and type is int:
+            return value
+
+        elif isinstance(value, float) and type is float:
+            return value
+
+        elif isinstance(value, list) and type is list:
+            for index, item in enumerate(value):
+                if not isinstance(item, str):
+                    return
+                else:
+                    new_item = self.type_cast_arg(item, str)
+                    if new_item is None:
+                        return
+                    else:
+                        value[index] = new_item
+            return value
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -113,66 +155,25 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    """
     def do_create(self, args):
-        Create an object of any class
-        if not args:
+        """ Create an object of any class"""
+        try:
+            if not args:
+                raise SyntaxError()
+            arg_list = args.split(" ")
+            kw = {}
+            for arg in arg_list[1:]:
+                arg_splited = arg.split("=")
+                arg_splited[1] = eval(arg_splited[1])
+                if type(arg_splited[1]) is str:
+                    arg_splited[1] = arg_splited[1].replace(
+                        "_", " ").replace('"', '\\"')
+                kw[arg_splited[0]] = arg_splited[1]
+        except SyntaxError:
             print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
+        except NameError:
             print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
-    """
-    def do_create(self, args):
-        """Create an object of any class"""
-        if not args:
-            print("* class name missing *")
-            return
-
-        """ split args by space"""
-        args_list = args.split()
-        """extracting the class name"""
-        class_name = args_list[0]
-        if class_name not in HBNBCommand.classes:
-            print("* class doesn't exists *")
-            return
-
-        """Extracting attribute-value pairs"""
-        attr_args = args_list[1:]
-        attributes = {}
-        for arg in attr_args:
-            key_value = arg.split('=')
-            if len(key_value) != 2:
-                continue
-            key, value = key_value
-            """
-            Handling the string value. removing the quotes,
-            replacing underscore with space, and also replace
-            escape quotes
-            """
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]
-                value = value.replace('_', ' ')
-                value = value.replace('\\"', '"')
-                """ Handling the float values """
-            elif '.' in value:
-                try:
-                    value = float(value)
-                except ValueError:
-                    continue
-            else:
-                try:
-                    value = int(value)
-                except ValueError:
-                    continue
-            attributes[key] = value
-
-        new_instance = HBNBCommand.classes[class_name](**attributes)
-        # storage.new(new_instance)
+        new_instance = HBNBCommand.classes[arg_list[0]](**kw)
         new_instance.save()
         print(new_instance.id)
 
@@ -237,7 +238,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del(storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -252,17 +253,16 @@ class HBNBCommand(cmd.Cmd):
         print_list = []
 
         if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
+            args_list = args.split(' ')
+            class_name = args_list[0]
+            if class_name not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for v in storage.all().values():
-                print_list.append(str(v))
+            print_list = storage.all(HBNBCommand.classes[class_name])
         else:
-            for k, v in storage.all().items():
-                print_list.append(str(v))
+            print_list = storage.all()
 
-        print(print_list)
+        print([str(obj) for obj in print_list])
 
     def help_all(self):
         """ Help information for the all command """
@@ -272,7 +272,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage.all().items():
+        for k, v in storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
